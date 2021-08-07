@@ -6,8 +6,6 @@ import 'package:forms_app/pages/login.dart';
 import 'package:forms_app/pages/location.dart';
 import 'package:forms_app/pages/addEmergency.dart';
 import 'package:forms_app/pages/addContacts.dart';
-import 'package:forms_app/pages/editContacts.dart';
-import 'package:forms_app/models/contact.dart';
 
 void main() {
   runApp(MaterialApp(

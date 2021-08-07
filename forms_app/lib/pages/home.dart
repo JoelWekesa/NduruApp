@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forms_app/pages/addEmergency.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/services/location.dart';
 import 'package:forms_app/pages/contacts.dart';
+import 'package:forms_app/pages/providers.dart';
 import 'package:forms_app/services/device.dart';
 import 'package:forms_app/services/panic.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'package:forms_app/services/providers.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,10 +19,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  Map? providers;
   Future<void> goToContacts() async {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
         (route) => false);
+  }
+
+  Future getAllProviders() async {
+    getProviders instance = getProviders();
+    await instance.allProviders();
+    providers = instance.providers;
+    return providers;
   }
 
   Widget buildEmergencyAndPhone() {
@@ -94,7 +104,14 @@ class _HomeState extends State<Home> {
             height: 210.0,
             color: Color.fromARGB(255, 235, 237, 237),
             child: InkWell(
-              onTap: () {},
+              onTap: () async {
+                await getAllProviders();
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => ProvidersList(),
+                        settings: RouteSettings(arguments: providers)),
+                    (route) => false);
+              },
               child: Card(
                 child: FractionallySizedBox(
                     widthFactor: 0.5,
@@ -193,15 +210,17 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildHomePage() {
-    return ListView.builder(itemCount: 1, itemBuilder: (BuildContext context, index) {
-      return Column(
-        children: [
-          buildEmergencyAndPhone(),
-          buildInfoAndServices(),
-          buildReportsAndHotspots(),
-        ],
-      );
-    });
+    return ListView.builder(
+        itemCount: 1,
+        itemBuilder: (BuildContext context, index) {
+          return Column(
+            children: [
+              buildEmergencyAndPhone(),
+              buildInfoAndServices(),
+              buildReportsAndHotspots(),
+            ],
+          );
+        });
   }
 
   Future myDevice() async {
@@ -224,8 +243,8 @@ class _HomeState extends State<Home> {
         await PanicEmergency(device: device, location: location);
     await instance.addPanicEmergency();
 
-    if (instance.statusCode == 200 && await Vibrate.canVibrate == true) {
-      Vibrate.vibrate();
+    if (instance.statusCode == 200) {
+      HapticFeedback.vibrate();
     }
   }
 
@@ -252,7 +271,7 @@ class _HomeState extends State<Home> {
       drawer: MainDrawer(),
       body: Container(child: buildHomePage()),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
         child: FloatingActionButton(
           backgroundColor: Colors.red[900],
           onPressed: () {
