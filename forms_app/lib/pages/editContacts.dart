@@ -1,37 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:forms_app/screens/maindrawer.dart';
-import 'package:forms_app/pages/login.dart';
-import 'package:forms_app/services/user.dart';
 import 'package:forms_app/services/contacts.dart';
 import 'package:forms_app/pages/contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class AddContacts extends StatefulWidget {
-  const AddContacts({Key? key}) : super(key: key);
+class EditContacts extends StatefulWidget {
+  const EditContacts({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  _AddContactsState createState() => _AddContactsState();
+  _EditContactsState createState() => _EditContactsState();
 }
 
-class _AddContactsState extends State<AddContacts> {
+class _EditContactsState extends State<EditContacts> {
   String? contact_name;
   String? contact_phone;
   String? contact_location;
   String? contact_relationship;
+  String? id;
   String? token;
-  bool? priority = false;
-  bool? loading = false;
-  int? statusCode;
-  int number = 0;
-  Map? User;
   Map? data;
+  Map? contact;
 
   final _formKey = GlobalKey<FormState>();
 
   void _showDialogSuccess() {
-    String message = "You have successfully added a new contact buddy.";
+    String message = data!["message"];
     // flutter defined function
     showDialog(
       context: context,
@@ -65,7 +60,6 @@ class _AddContactsState extends State<AddContacts> {
                     },
                     icon: Icon(Icons.family_restroom),
                     label: Text("View Contacts")),
-
                 SizedBox(width: 20),
                 ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -119,49 +113,18 @@ class _AddContactsState extends State<AddContacts> {
     );
   }
 
-  Future<void> authCheck() async {
+  Future<void> editEmergencyContact() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = await prefs.getString("access-token");
-
-    getUser instance = await getUser(token: token as String);
-    await instance.userDetails();
-    statusCode = instance.statusCode;
-    if (statusCode != 200) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (route) => false);
-    }
-    User = await instance.data;
-  }
-
-  Future<void> contactsCheck() async {
-    setState(() {
-      loading = true;
-    });
-    await authCheck();
-    try {
-      String id = User!["user"]["id"];
-      getUserContacts instance =
-          await getUserContacts(id: id, token: token as String);
-      await instance.userContacts();
-
-      setState(() {
-        number = instance.number as int;
-        loading = false;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future addBuddy() async {
-    addUserContacts instance = await addUserContacts(
+    token = prefs.getString("access-token");
+    id = contact!["id"];
+    editUserContacts instance = await editUserContacts(
+        id: id as String,
+        token: token as String,
         contact_name: contact_name as String,
         contact_phone: contact_phone as String,
         contact_location: contact_location as String,
-        contact_relationship: contact_relationship as String,
-        token: token as String);
-    await instance.addBuddies();
+        contact_relationship: contact_relationship as String);
+    await instance.editBuddy();
     data = instance.data;
     if (instance.statusCode == 200) {
       _showDialogSuccess();
@@ -174,10 +137,10 @@ class _AddContactsState extends State<AddContacts> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
       child: TextFormField(
+        initialValue: contact!["contact_name"],
         decoration: InputDecoration(
+          hintText: "Conatct Name",
           icon: Icon(Icons.person, color: Colors.blue),
-          labelText: "Contact name",
-          labelStyle: TextStyle(fontSize: 16, color: Colors.black),
         ),
         validator: (value) {
           if (value == null || value.length < 1) {
@@ -195,19 +158,14 @@ class _AddContactsState extends State<AddContacts> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
       child: TextFormField(
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        initialValue: contact!["contact_phone"],
         decoration: InputDecoration(
-          icon: Icon(
-            Icons.phone,
-            color: Colors.green,
-          ),
-          labelText: "Contact phone number",
-          labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+          hintText: "Contact Phone Number",
+          icon: Icon(Icons.phone, color: Colors.green),
         ),
         validator: (value) {
           if (value == null || value.length != 10) {
-            return "Please input contact phone number";
+            return "Please input a valid phone number.";
           }
         },
         onSaved: (value) {
@@ -221,14 +179,14 @@ class _AddContactsState extends State<AddContacts> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
       child: TextFormField(
+        initialValue: contact!["contact_location"],
         decoration: InputDecoration(
+          hintText: "Conatact Location",
           icon: Icon(Icons.location_pin),
-          labelText: "Contact location",
-          labelStyle: TextStyle(fontSize: 16, color: Colors.black),
         ),
         validator: (value) {
           if (value == null || value.length < 1) {
-            return "Please input contact name";
+            return "Please input contact location";
           }
         },
         onSaved: (value) {
@@ -242,10 +200,10 @@ class _AddContactsState extends State<AddContacts> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
       child: TextFormField(
+        initialValue: contact!["contact_relationship"],
         decoration: InputDecoration(
+          hintText: "Contact Relationship",
           icon: Icon(Icons.family_restroom, color: Colors.amber),
-          labelText: "Contact relationship",
-          labelStyle: TextStyle(fontSize: 16, color: Colors.black),
         ),
         validator: (value) {
           if (value == null || value.length < 1) {
@@ -266,7 +224,7 @@ class _AddContactsState extends State<AddContacts> {
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              addBuddy();
+              editEmergencyContact();
             }
           },
           icon: Icon(Icons.send),
@@ -274,87 +232,34 @@ class _AddContactsState extends State<AddContacts> {
     );
   }
 
-  Widget buildMaxDialog() {
-    return Container(
-      child: SizedBox(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                  "You cannot add more contacts because you have added maximum number of allowed contacts",
-                  style: TextStyle(letterSpacing: 2, fontSize: 16)),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => ContactsPage()),
-                        (route) => false);
-                  },
-                  icon: Icon(Icons.family_restroom_outlined),
-                  label: Text("View my contacts"))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildLoading() {
-    return SpinKitCircle(
-      color: Colors.white,
-      size: 50.0,
-    );
-  }
-
   Widget buildForm() {
-    if (number >= 5) {
-      return buildMaxDialog();
-    } else if (loading == true) {
-      return buildLoading();
-    } else {
-      return ListView.builder(
-          itemCount: 1,
-          itemBuilder: (BuildContext context, index) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildContactName(),
-                  buildContactPhone(),
-                  buildContactLocation(),
-                  buildContactRelationship(),
-                  buildSubmit(),
-                ],
-              ),
-            );
-          });
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    contactsCheck();
+    return ListView.builder(
+        itemCount: 1,
+        itemBuilder: (BuildContext context, index) {
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildContactName(),
+                buildContactPhone(),
+                buildContactLocation(),
+                buildContactRelationship(),
+                buildSubmit(),
+              ],
+            ),
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    contact = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
-        backgroundColor: Colors.grey[300],
-        appBar: AppBar(title: Text("Add Contacts"), centerTitle: true),
+        appBar: AppBar(title: Text("Edit Contact"), centerTitle: true),
         drawer: MainDrawer(),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Form(key: _formKey, child: buildForm()),
-            ),
-          ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(key: _formKey, child: Card(child: buildForm())),
         ));
   }
 }
