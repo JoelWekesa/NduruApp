@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:forms_app/services/user.dart';
+import 'package:forms_app/services/parents.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -18,6 +19,12 @@ class _RegisterState extends State<Register> {
   String? email;
   String? phonenumber;
   String? password;
+  bool? student = false;
+  Map? parents;
+  List? items;
+  String? parentId;
+  String? studentID;
+  String? nationalID;
   final _formKey = GlobalKey<FormState>();
 
   Future<void> checkAuth() async {
@@ -27,10 +34,19 @@ class _RegisterState extends State<Register> {
     await instance.userDetails();
     int statusCode = await instance.statusCode as int;
     if (statusCode == 200) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => Home()),
-          (route) => false);
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) => Home()),
+      );
     }
+  }
+
+  Future<void> allParents() async {
+    await checkAuth();
+    Parents instance = Parents();
+    await instance.getParents();
+    parents = instance.parents;
+    print(parents!["parents"]);
+    items = parents!['parents'];
   }
 
   Widget buildFirstname() {
@@ -153,6 +169,100 @@ class _RegisterState extends State<Register> {
     );
   }
 
+  Widget buildIsStudent() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: Row(
+        children: [
+          Checkbox(
+            checkColor: Colors.white,
+            value: student,
+            onChanged: (bool? value) {
+              setState(() {
+                student = value!;
+              });
+            },
+          ),
+          Text(
+            "I'm a student",
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildAffilition() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 20),
+      child: DropdownButtonFormField(
+        decoration: InputDecoration(
+          labelText: "Select your institution",
+          labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+        ),
+        items: items?.map((parent) {
+          return DropdownMenuItem(
+              value: parent["id"], child: Text(parent["name"]));
+        }).toList(),
+        onChanged: (value) => setState(() {
+          parentId = value as String;
+        }),
+      ),
+    );
+  }
+
+  Widget buildNationalId() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+      child: TextFormField(
+          decoration: InputDecoration(
+            labelText: "Enter your national ID",
+            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+          validator: (value) {
+            if (student == false && (value == null || value.length < 1)) {
+              return "Please input your national ID";
+            }
+          },
+          onSaved: (value) {
+            nationalID = value;
+          }),
+    );
+  }
+
+  Widget buildStudentId() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+      child: TextFormField(
+          decoration: InputDecoration(
+            labelText: "Enter your student ID",
+            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+          validator: (value) {
+            if (student == true && (value == null || value.length < 1)) {
+              return "Please input your student ID";
+            }
+          },
+          onSaved: (value) {
+            studentID = value;
+          }),
+    );
+  }
+
+  Widget buildIdentiy() {
+    if (student == false) {
+      return buildNationalId();
+    }
+
+    return Column(
+      children: [
+        buildNationalId(),
+        buildAffilition(),
+        buildStudentId(),
+      ],
+    );
+  }
+
   Widget buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
@@ -168,6 +278,9 @@ class _RegisterState extends State<Register> {
                   print(email);
                   print(phonenumber);
                   print(password);
+                  print(studentID);
+                  print(nationalID);
+                  print(parentId);
                 }
               },
               icon: Icon(Icons.send),
@@ -197,6 +310,8 @@ class _RegisterState extends State<Register> {
                 buildUsername(),
                 buildEmail(),
                 buildPhonenumber(),
+                buildIdentiy(),
+                buildIsStudent(),
                 buildPassword(),
                 buildSubmitButton(),
               ],
@@ -209,7 +324,7 @@ class _RegisterState extends State<Register> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkAuth();
+    allParents();
   }
 
   @override
@@ -223,13 +338,13 @@ class _RegisterState extends State<Register> {
         drawer: MainDrawer(),
         body: Center(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Form(
-                  key: _formKey,
-                  child: buildForm(),
-                ),
-              ),
-            )));
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Form(
+              key: _formKey,
+              child: buildForm(),
+            ),
+          ),
+        )));
   }
 }

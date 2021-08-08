@@ -56,10 +56,10 @@ class _ContactsPageState extends State<ContactsPage> {
                     ),
                     onPressed: () async {
                       await deleteContact(id);
-                      Navigator.of(context).pushAndRemoveUntil(
+                      Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (BuildContext context) => super.widget),
-                          (route) => false);
+                          );
                     },
                     icon: Icon(Icons.delete),
                     label: Text("Delete")),
@@ -99,9 +99,9 @@ class _ContactsPageState extends State<ContactsPage> {
       User = user.data;
       return User!["user"]["id"];
     } else {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (route) => false);
+          );
     }
   }
 
@@ -148,10 +148,10 @@ class _ContactsPageState extends State<ContactsPage> {
             SizedBox(height: 10),
             ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
+                  Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (BuildContext context) => AddContacts()),
-                      (route) => false);
+                      );
                 },
                 icon: Icon(Icons.add),
                 label: Text("Add new contact."))
@@ -231,14 +231,14 @@ class _ContactsPageState extends State<ContactsPage> {
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.cyan),
                                 onPressed: () {
-                                  Navigator.of(context).pushAndRemoveUntil(
+                                  Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (BuildContext context) =>
                                               EditContacts(), settings: RouteSettings(
                                           arguments: details[index],
                                         ),
                                       ),
-                                      (route) => false);
+                                      );
                                 },
                                 icon: Icon(Icons.edit),
                                 label: Text("Edit"))

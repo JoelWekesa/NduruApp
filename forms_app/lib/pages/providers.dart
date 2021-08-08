@@ -6,6 +6,8 @@ import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/services/device.dart';
 import 'package:forms_app/services/location.dart';
 import 'package:forms_app/services/panic.dart';
+import 'package:forms_app/pages/services.dart';
+import 'package:forms_app/services/services.dart';
 
 class ProvidersList extends StatefulWidget {
   const ProvidersList({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class ProvidersList extends StatefulWidget {
 class _ProvidersListState extends State<ProvidersList> {
   Map? providers;
   List? providersList;
+  Map? services;
 
   Future myDevice() async {
     DeviceInfo instance = await DeviceInfo();
@@ -43,22 +46,33 @@ class _ProvidersListState extends State<ProvidersList> {
     }
   }
 
+  Future<void> getCompanyServices(id) async {
+    providerServices instance = providerServices(id: id);
+    await instance.getServices();
+    services = instance.data;
+  }
+
   Widget buildProvidersPage() {
     providersList = providers!["providers"]["rows"];
     return ListView.builder(
         itemCount: providersList!.length,
         itemBuilder: (BuildContext context, index) {
           return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              color: Colors.grey[200],
-              child: ListTile(
-                title: Text(providersList![index]["name"],
-                    style: TextStyle(fontSize: 18, letterSpacing: 2)),
-                onTap: () {},
-              ),
-            ),
-          );
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                color: Colors.grey[200],
+                child: ListTile(
+                  title: Text(providersList![index]["name"],
+                      style: TextStyle(fontSize: 18, letterSpacing: 2)),
+                  onTap: () async {
+                    await getCompanyServices(providersList![index]["id"]);
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ServicesPage(), settings: RouteSettings(arguments: services)),
+                        );
+                  },
+                ),
+              ));
         });
   }
 

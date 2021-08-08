@@ -45,9 +45,9 @@ class _AddEmergencyState extends State<AddEmergency> {
     await instance.userDetails();
     statusCodeUser = instance.statusCode;
     if (statusCodeUser != 200) {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (route) => false);
+          );
     }
   }
 
@@ -56,7 +56,6 @@ class _AddEmergencyState extends State<AddEmergency> {
         "There was an error in sending your report. Please ensure you have internet connection and your location service is turned on.";
     // flutter defined function
     showDialog(
-      barrierColor: Colors.red[100],
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
@@ -92,12 +91,11 @@ class _AddEmergencyState extends State<AddEmergency> {
     String message = "We received your report. We'll be there shortly.";
     // flutter defined function
     showDialog(
-      barrierColor: Colors.green[100],
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          backgroundColor: Colors.green[800],
+          backgroundColor: Colors.green[400],
           title: Text("Report Sent",
               style: TextStyle(
                   letterSpacing: 2,
@@ -114,10 +112,10 @@ class _AddEmergencyState extends State<AddEmergency> {
                   primary: Colors.green[200],
                 ),
                 onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
+                  Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (BuildContext context) => Home()),
-                      (route) => false);
+                      );
                 },
                 icon: Icon(Icons.close),
                 label: Text("Close"))
@@ -152,39 +150,19 @@ class _AddEmergencyState extends State<AddEmergency> {
     }
   }
 
-  Widget buildDescriptions() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        color: Colors.grey[200],
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextFormField(
-            maxLines: 17,
-            decoration:
-                InputDecoration.collapsed(hintText: "Describe your emergency"),
-            validator: (value) {
-              if (value == null || value.length < 1) {
-                return "Please Describe your emergency";
-              }
-            },
-            onSaved: (value) {
-              description = value;
-            },
-          ),
-        ),
+  Widget buildLoading() {
+    return Container(
+      child: SpinKitCircle(
+        color: Colors.blue,
+        size: 50.0,
       ),
     );
   }
 
-  Widget buildLoading() {
-    return SpinKitCircle(
-      color: Colors.white,
-      size: 50.0,
-    );
-  }
-
   Widget buildSubmit() {
+    if (loading == true) {
+      return buildLoading();
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -205,10 +183,10 @@ class _AddEmergencyState extends State<AddEmergency> {
           SizedBox(width: 20),
           ElevatedButton.icon(
               onPressed: () async {
-                Navigator.of(context).pushAndRemoveUntil(
+                Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (BuildContext context) => Home()),
-                    (route) => false);
+                    );
               },
               icon: Icon(Icons.cancel),
               label: Text(
@@ -220,21 +198,43 @@ class _AddEmergencyState extends State<AddEmergency> {
     );
   }
 
-  Widget buildEmergency() {
+  Widget buildDescriptions() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-          itemCount: 1,
-          itemBuilder: (BuildContext context, index) {
-            return Card(
-                child: Column(
-              children: [
-                buildDescriptions(),
-                buildSubmit(),
-              ],
-            ));
-          }),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Flexible(
+                child: SizedBox.expand(
+                  child: TextFormField(
+                    maxLines: null,
+                    decoration: InputDecoration.collapsed(
+                        hintText: "Describe your emergency"),
+                    validator: (value) {
+                      if (value == null || value.length < 1) {
+                        return "Please Describe your emergency";
+                      }
+                    },
+                    onSaved: (value) {
+                      description = value;
+                    },
+                  ),
+                ),
+              ),
+              buildSubmit()
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+  
+
+  Widget buildEmergency() {
+    return buildDescriptions();
   }
 
   @override
@@ -246,20 +246,14 @@ class _AddEmergencyState extends State<AddEmergency> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading == true) {
-      return Scaffold(
-          backgroundColor: Colors.grey[300],
-          body: Container(child: buildLoading()));
-    } else {
-      return Scaffold(
-        backgroundColor: Colors.grey[300],
-        appBar: AppBar(
-          title: Text("Report an emergency"),
-          centerTitle: true,
-        ),
-        drawer: MainDrawer(),
-        body: Form(key: _formKey, child: buildEmergency()),
-      );
-    }
+    return Scaffold(
+      backgroundColor: Colors.grey[300],
+      appBar: AppBar(
+        title: Text("Report an emergency"),
+        centerTitle: true,
+      ),
+      drawer: MainDrawer(),
+      body: Form(key: _formKey, child: buildEmergency()),
+    );
   }
 }

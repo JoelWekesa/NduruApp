@@ -28,9 +28,9 @@ class _LoginState extends State<Login> {
     data = instance.data;
 
     if (statusCode == 200) {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => Home()),
-          (route) => false);
+          );
     } else {
       _showDialog();
     }
@@ -43,9 +43,9 @@ class _LoginState extends State<Login> {
     await instance.userDetails();
     int statusCode = await instance.statusCode as int;
     if (statusCode == 200) {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => Home()),
-          (route) => false);
+          );
     }
   }
 

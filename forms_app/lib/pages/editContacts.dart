@@ -52,11 +52,11 @@ class _EditContactsState extends State<EditContacts> {
                       primary: Colors.cyan,
                     ),
                     onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
+                      Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (BuildContext context) =>
                                   ContactsPage()),
-                          (route) => false);
+                          );
                     },
                     icon: Icon(Icons.family_restroom),
                     label: Text("View Contacts")),

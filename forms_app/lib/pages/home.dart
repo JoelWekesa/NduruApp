@@ -21,9 +21,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   Map? providers;
   Future<void> goToContacts() async {
-    Navigator.of(context).pushAndRemoveUntil(
+    Navigator.of(context).push(
         MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
-        (route) => false);
+        );
   }
 
   Future getAllProviders() async {
@@ -33,179 +33,170 @@ class _HomeState extends State<Home> {
     return providers;
   }
 
-  Widget buildEmergencyAndPhone() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 3, 0, 3),
-      child: Row(
-        children: [
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => AddEmergency()),
-                    (route) => false);
-              },
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.warning_rounded,
-                              size: constraint.maxWidth, color: Colors.red),
-                          Text("Emergency")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () {
-                goToContacts();
-              },
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.contact_phone,
-                              size: constraint.maxWidth, color: Colors.green),
-                          Text("Contacts")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-        ],
+  Widget buildEmergency() {
+    return Expanded(
+        child: InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => AddEmergency()),
+            );
+      },
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.warning_rounded,
+                      size: constraint.maxWidth, color: Colors.red),
+                  Text("Emergency", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
       ),
+    ));
+  }
+
+  Widget buildPhone() {
+    return Expanded(
+        child: InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => ContactsPage()),
+            );
+      },
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.phone_rounded,
+                      size: constraint.maxWidth, color: Colors.green),
+                  Text("Phone", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
+      ),
+    ));
+  }
+
+  Widget buildServices() {
+    return Expanded(
+        child: InkWell(
+      onTap: () async {
+        await getAllProviders();
+        Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => ProvidersList(),
+                settings: RouteSettings(arguments: providers)),
+            );
+      },
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.settings_rounded,
+                      size: constraint.maxWidth, color: Colors.cyan),
+                  Text("Services", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
+      ),
+    ));
+  }
+
+  Widget buildInfo() {
+    return Expanded(
+        child: InkWell(
+      onTap: () {},
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_rounded,
+                      size: constraint.maxWidth, color: Colors.blue),
+                  Text("Information", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
+      ),
+    ));
+  }
+
+  Widget buildReports() {
+    return Expanded(
+        child: InkWell(
+      onTap: () {},
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.file_copy_rounded,
+                      size: constraint.maxWidth, color: Colors.amber),
+                  Text("Reports", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
+      ),
+    ));
+  }
+
+  Widget buildBlackSpots() {
+    return Expanded(
+        child: InkWell(
+      onTap: () {},
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cancel_rounded,
+                      size: constraint.maxWidth, color: Colors.black),
+                  Text("BlackSpots", style: TextStyle(fontSize: 20))
+                ],
+              );
+            })),
+            height: 300),
+      ),
+    ));
+  }
+
+  Widget builEmergencyAndPhone() {
+    return Row(
+      children: [
+        buildEmergency(),
+        buildPhone(),
+      ],
     );
   }
 
-  Widget buildInfoAndServices() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 3, 0, 3),
-      child: Row(
-        children: [
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () async {
-                await getAllProviders();
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => ProvidersList(),
-                        settings: RouteSettings(arguments: providers)),
-                    (route) => false);
-              },
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.settings_rounded,
-                              size: constraint.maxWidth, color: Colors.cyan),
-                          Text("Services")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () {},
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.info_outlined,
-                              size: constraint.maxWidth, color: Colors.blue),
-                          Text("Information")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-        ],
-      ),
+  Widget buildServicesAndPhone() {
+    return Row(
+      children: [buildServices(), buildInfo()],
     );
   }
 
-  Widget buildReportsAndHotspots() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 3, 0, 3),
-      child: Row(
-        children: [
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () {},
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.file_present_rounded,
-                              size: constraint.maxWidth, color: Colors.amber),
-                          Text("Reports")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-          Container(
-            width: 192.0,
-            height: 210.0,
-            color: Color.fromARGB(255, 235, 237, 237),
-            child: InkWell(
-              onTap: () {},
-              child: Card(
-                child: FractionallySizedBox(
-                    widthFactor: 0.5,
-                    child: LayoutBuilder(builder: (context, constraint) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.dangerous_rounded,
-                              size: constraint.maxWidth, color: Colors.black),
-                          Text("Hotspots")
-                        ],
-                      );
-                    })),
-              ),
-            ),
-          ),
-        ],
-      ),
+  Widget buildReportsAndSpots() {
+    return Row(
+      children: [
+        buildReports(),
+        buildBlackSpots(),
+      ],
     );
   }
 
@@ -215,9 +206,9 @@ class _HomeState extends State<Home> {
         itemBuilder: (BuildContext context, index) {
           return Column(
             children: [
-              buildEmergencyAndPhone(),
-              buildInfoAndServices(),
-              buildReportsAndHotspots(),
+              builEmergencyAndPhone(),
+              buildServicesAndPhone(),
+              buildReportsAndSpots(),
             ],
           );
         });
@@ -269,7 +260,10 @@ class _HomeState extends State<Home> {
         // centerTitle: true,
       ),
       drawer: MainDrawer(),
-      body: Container(child: buildHomePage()),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: buildHomePage(),
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
         child: FloatingActionButton(

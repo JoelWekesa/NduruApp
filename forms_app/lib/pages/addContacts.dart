@@ -57,11 +57,11 @@ class _AddContactsState extends State<AddContacts> {
                       primary: Colors.cyan,
                     ),
                     onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
+                      Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (BuildContext context) =>
                                   ContactsPage()),
-                          (route) => false);
+                          );
                     },
                     icon: Icon(Icons.family_restroom),
                     label: Text("View Contacts")),
@@ -127,9 +127,9 @@ class _AddContactsState extends State<AddContacts> {
     await instance.userDetails();
     statusCode = instance.statusCode;
     if (statusCode != 200) {
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => Login()),
-          (route) => false);
+          );
     }
     User = await instance.data;
   }
@@ -288,10 +288,10 @@ class _AddContactsState extends State<AddContacts> {
               SizedBox(height: 20),
               ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
+                    Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (BuildContext context) => ContactsPage()),
-                        (route) => false);
+                        );
                   },
                   icon: Icon(Icons.family_restroom_outlined),
                   label: Text("View my contacts"))
