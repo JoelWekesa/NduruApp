@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forms_app/screens/maindrawer.dart';
+import 'package:forms_app/services/passwordreset.dart';
 
 class PasswordReset extends StatefulWidget {
   const PasswordReset({Key? key}) : super(key: key);
@@ -13,8 +14,108 @@ class _PasswordResetState extends State<PasswordReset> {
   String? code;
   String? password;
   String? confirmPassword;
+  Map? data;
 
   final _formKey = GlobalKey<FormState>();
+
+  void _showDialogSuccess() {
+    String message = data!["message"];
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: Colors.green[400],
+          title: Text("Success!",
+              style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.white)),
+          content: Text("$message",
+              style: TextStyle(
+                  letterSpacing: 2, fontSize: 18, color: Colors.white)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            Row(
+              children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.cyan,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed("/login");
+                    },
+                    icon: Icon(Icons.login),
+                    label: Text("Login")),
+                SizedBox(width: 20),
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green[200],
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.close),
+                    label: Text("Close")),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog() {
+    String message = data!["message"];
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: Colors.red[400],
+          title: Text("Request Failed",
+              style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.white)),
+          content: Text("$message",
+              style: TextStyle(
+                  letterSpacing: 2, fontSize: 18, color: Colors.white)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red[200],
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(Icons.close),
+                label: Text("Close"))
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> resetPassword() async {
+    UserPasswordReset instance = UserPasswordReset(
+        email: email as String,
+        code: code as String,
+        password: password as String);
+
+    await instance.resetPass();
+    data = instance.data;
+    if (instance.statusCode != 200) {
+      _showDialog();
+    } else {
+      _showDialogSuccess();
+    }
+  }
 
   Widget buildEmail() {
     return Padding(
@@ -111,7 +212,7 @@ class _PasswordResetState extends State<PasswordReset> {
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              print(email);
+              await resetPassword();
             }
           },
           icon: Icon(Icons.send),

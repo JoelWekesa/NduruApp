@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/pages/passwordreset.dart';
+import 'package:forms_app/services/requestresetcode.dart';
 
 class RequestResetCode extends StatefulWidget {
   const RequestResetCode({Key? key}) : super(key: key);
@@ -12,6 +13,11 @@ class RequestResetCode extends StatefulWidget {
 class _RequestResetCodeState extends State<RequestResetCode> {
   String? email;
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> passResetCode() async {
+    RequestReset instance = RequestReset(email: email as String);
+    await instance.requestCode();
+  }
 
   Widget buildEmail() {
     return Padding(
@@ -44,8 +50,10 @@ class _RequestResetCodeState extends State<RequestResetCode> {
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) => PasswordReset(), settings: RouteSettings(arguments: email)));
+              await passResetCode();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => PasswordReset(),
+                  settings: RouteSettings(arguments: email)));
             }
           },
           icon: Icon(Icons.send),
