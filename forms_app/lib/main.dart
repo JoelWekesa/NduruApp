@@ -7,6 +7,7 @@ import 'package:forms_app/pages/location.dart';
 import 'package:forms_app/pages/addEmergency.dart';
 import 'package:forms_app/pages/addContacts.dart';
 import 'package:forms_app/pages/services.dart';
+import 'package:forms_app/pages/requestResetCode.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -20,6 +21,7 @@ void main() {
       "/addemergency": (context) => AddEmergency(),
       "/addcontacts": (context) => AddContacts(),
       "/services": (context) => ServicesPage(),
+      "/resetcodes": (context) => RequestResetCode(),
       // "/editcontacts": (context) => EditContacts(contact: ,),
     },
     theme: ThemeData(primarySwatch: Colors.red),

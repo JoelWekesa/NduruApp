@@ -29,8 +29,8 @@ class _LoginState extends State<Login> {
 
     if (statusCode == 200) {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) => Home()),
-          );
+        MaterialPageRoute(builder: (BuildContext context) => Home()),
+      );
     } else {
       _showDialog();
     }
@@ -44,8 +44,8 @@ class _LoginState extends State<Login> {
     int statusCode = await instance.statusCode as int;
     if (statusCode == 200) {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) => Home()),
-          );
+        MaterialPageRoute(builder: (BuildContext context) => Home()),
+      );
     }
   }
 
@@ -81,7 +81,6 @@ class _LoginState extends State<Login> {
             icon: Icon(Icons.mail),
             labelText: "Enter your email",
             labelStyle: TextStyle(fontSize: 16, color: Colors.black),
-            
           ),
           validator: (value) {
             bool emailValid = RegExp(
@@ -106,7 +105,6 @@ class _LoginState extends State<Login> {
             icon: Icon(Icons.lock),
             labelText: "Enter your password",
             labelStyle: TextStyle(fontSize: 16, color: Colors.black),
-            
           ),
           obscureText: true,
           validator: (value) {
@@ -123,23 +121,34 @@ class _LoginState extends State<Login> {
   Widget buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 0, 10),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ElevatedButton.icon(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  startLogin(email, password);
-                }
-              },
-              icon: Icon(Icons.send),
-              label: Text("Login")),
-          SizedBox(width: 20),
+          Row(
+            children: [
+              ElevatedButton.icon(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      startLogin(email, password);
+                    }
+                  },
+                  icon: Icon(Icons.send),
+                  label: Text("Login")),
+              SizedBox(width: 10),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/register");
+                  },
+                  child: Text("Or register"))
+            ],
+          ),
+          SizedBox(height: 10),
           TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/login");
+                Navigator.pushNamed(context, "/resetcodes");
               },
-              child: Text("Or register"))
+              child: Text("Forgot password?"))
         ],
       ),
     );

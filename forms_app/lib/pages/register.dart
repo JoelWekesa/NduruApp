@@ -4,6 +4,8 @@ import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:forms_app/services/user.dart';
 import 'package:forms_app/services/parents.dart';
+import 'package:forms_app/services/register.dart';
+import 'package:forms_app/pages/activateAccount.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -19,12 +21,14 @@ class _RegisterState extends State<Register> {
   String? email;
   String? phonenumber;
   String? password;
+  String? confirmPassword;
   bool? student = false;
   Map? parents;
   List? items;
-  String? parentId;
-  String? studentID;
-  String? nationalID;
+  Map? data;
+  var parentId = "";
+  var studentID = "";
+  var nationalID = "";
   final _formKey = GlobalKey<FormState>();
 
   Future<void> checkAuth() async {
@@ -47,6 +51,113 @@ class _RegisterState extends State<Register> {
     parents = instance.parents;
     print(parents!["parents"]);
     items = parents!['parents'];
+  }
+
+  Future<void> addUser() async {
+    userRegistration instance = await userRegistration(
+      first_name: firstname as String,
+      last_name: lastname as String,
+      email: email as String,
+      password: password as String,
+      phone: phonenumber as String,
+      student_id: studentID,
+      national_id: nationalID,
+      attached_to: parentId,
+    );
+
+    await instance.registerUser();
+    data = instance.data;
+    if (instance.statusCode != 200) {
+      _showDialog();
+    } else {
+      _showDialogSuccess();
+    }
+  }
+
+  void _showDialogSuccess() {
+    String message = "You account was successfully registered!";
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: Colors.green[400],
+          title: Text("Success!",
+              style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.white)),
+          content: Text("$message",
+              style: TextStyle(
+                  letterSpacing: 2, fontSize: 18, color: Colors.white)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            Row(
+              children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.cyan,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => ActivateAccount(),
+                          settings: RouteSettings(arguments: data)));
+                    },
+                    icon: Icon(Icons.send),
+                    label: Text("Activate Account")),
+                SizedBox(width: 20),
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green[200],
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.close),
+                    label: Text("Close")),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog() {
+    String message = data!["message"];
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          backgroundColor: Colors.red[400],
+          title: Text("Request Failed",
+              style: TextStyle(
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.white)),
+          content: Text("$message",
+              style: TextStyle(
+                  letterSpacing: 2, fontSize: 18, color: Colors.white)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red[200],
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(Icons.close),
+                label: Text("Close"))
+          ],
+        );
+      },
+    );
   }
 
   Widget buildFirstname() {
@@ -83,25 +194,6 @@ class _RegisterState extends State<Register> {
           },
           onSaved: (value) {
             lastname = value;
-          }),
-    );
-  }
-
-  Widget buildUsername() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: TextFormField(
-          decoration: InputDecoration(
-            labelText: "Enter your username",
-            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "Please input your username";
-            }
-          },
-          onSaved: (value) {
-            username = value;
           }),
     );
   }
@@ -163,8 +255,31 @@ class _RegisterState extends State<Register> {
               return "Passwords must be at least 8 characters long";
             }
           },
+          onChanged: (value) {
+            password = value;
+          },
           onSaved: (value) {
             password = value;
+          }),
+    );
+  }
+
+  Widget buildConfirmPassword() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+      child: TextFormField(
+          decoration: InputDecoration(
+            labelText: "Confirm password",
+            labelStyle: TextStyle(fontSize: 16, color: Colors.black),
+          ),
+          obscureText: true,
+          validator: (value) {
+            if (value == null || value.length < 8 || value != password) {
+              return "Passwords did not match";
+            }
+          },
+          onSaved: (value) {
+            confirmPassword = value;
           }),
     );
   }
@@ -202,7 +317,7 @@ class _RegisterState extends State<Register> {
         ),
         items: items?.map((parent) {
           return DropdownMenuItem(
-              value: parent["id"], child: Text(parent["name"]));
+              value: parent["name"], child: Text(parent["name"]));
         }).toList(),
         onChanged: (value) => setState(() {
           parentId = value as String;
@@ -219,13 +334,14 @@ class _RegisterState extends State<Register> {
             labelText: "Enter your national ID",
             labelStyle: TextStyle(fontSize: 16, color: Colors.black),
           ),
+          keyboardType: TextInputType.number,
           validator: (value) {
             if (student == false && (value == null || value.length < 1)) {
               return "Please input your national ID";
             }
           },
           onSaved: (value) {
-            nationalID = value;
+            nationalID = value as String;
           }),
     );
   }
@@ -244,7 +360,7 @@ class _RegisterState extends State<Register> {
             }
           },
           onSaved: (value) {
-            studentID = value;
+            studentID = value as String;
           }),
     );
   }
@@ -269,18 +385,10 @@ class _RegisterState extends State<Register> {
       child: Row(
         children: [
           ElevatedButton.icon(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  print(firstname);
-                  print(lastname);
-                  print(username);
-                  print(email);
-                  print(phonenumber);
-                  print(password);
-                  print(studentID);
-                  print(nationalID);
-                  print(parentId);
+                  await addUser();
                 }
               },
               icon: Icon(Icons.send),
@@ -307,12 +415,13 @@ class _RegisterState extends State<Register> {
               children: [
                 buildFirstname(),
                 buildLastname(),
-                buildUsername(),
+                // buildUsername(),
                 buildEmail(),
                 buildPhonenumber(),
                 buildIdentiy(),
                 buildIsStudent(),
                 buildPassword(),
+                buildConfirmPassword(),
                 buildSubmitButton(),
               ],
             ),

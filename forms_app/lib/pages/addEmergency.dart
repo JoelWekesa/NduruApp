@@ -126,7 +126,6 @@ class _AddEmergencyState extends State<AddEmergency> {
   }
 
   Future<void> userEmergency() async {
-    await authCheck();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = await prefs.getString("access-token");
     location = await currentUserLocation();
