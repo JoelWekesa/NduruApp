@@ -3,6 +3,7 @@ import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/services/contacts.dart';
 import 'package:forms_app/pages/contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:forms_app/screens/loading.dart';
 
 class EditContacts extends StatefulWidget {
   const EditContacts({
@@ -22,6 +23,7 @@ class _EditContactsState extends State<EditContacts> {
   String? token;
   Map? data;
   Map? contact;
+  bool? loading = false;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -53,10 +55,9 @@ class _EditContactsState extends State<EditContacts> {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  ContactsPage()),
-                          );
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ContactsPage()),
+                      );
                     },
                     icon: Icon(Icons.family_restroom),
                     label: Text("View Contacts")),
@@ -114,6 +115,9 @@ class _EditContactsState extends State<EditContacts> {
   }
 
   Future<void> editEmergencyContact() async {
+    setState(() {
+      loading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString("access-token");
     id = contact!["id"];
@@ -126,6 +130,9 @@ class _EditContactsState extends State<EditContacts> {
         contact_relationship: contact_relationship as String);
     await instance.editBuddy();
     data = instance.data;
+    setState(() {
+      loading = false;
+    });
     if (instance.statusCode == 200) {
       _showDialogSuccess();
     } else {
@@ -218,17 +225,25 @@ class _EditContactsState extends State<EditContacts> {
   }
 
   Widget buildSubmit() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: ElevatedButton.icon(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              editEmergencyContact();
-            }
-          },
-          icon: Icon(Icons.send),
-          label: Text("Submit")),
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+          child: ElevatedButton.icon(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  editEmergencyContact();
+                }
+              },
+              icon: Icon(Icons.send),
+              label: Text("Submit")),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: LoadingCircle(loading: loading as bool),
+        )
+      ],
     );
   }
 

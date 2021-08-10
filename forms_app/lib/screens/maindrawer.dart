@@ -13,6 +13,28 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
+  Map? data = {};
+  String name = "";
+  String email = "";
+  int statusCode = 401;
+
+  Future<void> userInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.getString("access-token") as String;
+    getUser instance = await getUser(token: token);
+    await instance.userDetails();
+    data = instance.data;
+    statusCode = instance.statusCode as int;
+    try {
+      setState(() {
+        name = data!["user"]["first_name"] + " " + data!["user"]["last_name"];
+        email = data!["user"]["email"];
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<void> userLogout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("access-token", "");
@@ -38,6 +60,9 @@ class _MainDrawerState extends State<MainDrawer> {
   }
 
   Widget buildAddContacts() {
+    if (statusCode != 200) {
+      return SizedBox();
+    }
     return ListTile(
       leading: Icon(Icons.add, color: Colors.white),
       title:
@@ -51,6 +76,9 @@ class _MainDrawerState extends State<MainDrawer> {
   }
 
   Widget buildProfile(context) {
+    if (statusCode != 200) {
+      return SizedBox();
+    }
     return InkWell(
         onTap: () {
           Navigator.pushNamed(context, "/register");
@@ -65,19 +93,17 @@ class _MainDrawerState extends State<MainDrawer> {
               SizedBox(
                 width: 18,
               ),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text("Joel Wekesa",
-                        style: TextStyle(color: Colors.white, fontSize: 20)),
-                    Text("joelwekesa.jw@gmail.com",
-                        style: TextStyle(color: Colors.white, fontSize: 10))
-                  ]),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                  Widget>[
+                Text(name, style: TextStyle(color: Colors.white, fontSize: 20)),
+                Text(email, style: TextStyle(color: Colors.white, fontSize: 10))
+              ]),
               SizedBox(
                 width: 18,
               ),
               CircleAvatar(
-                  backgroundColor: Colors.teal[800], child: Icon(Icons.edit))
+                  backgroundColor: Colors.teal[800], child: Icon(Icons.edit)),
+              buildDivider(),
             ],
           ),
         ));
@@ -116,22 +142,25 @@ class _MainDrawerState extends State<MainDrawer> {
     );
   }
 
-  Widget buildPanic() {
-    return ListTile(
-      leading: Icon(Icons.warning, color: Colors.white),
-      title: Text("Emergency", style: TextStyle(color: Colors.white)),
-      onTap: () {},
-    );
+  Widget buildAuth(context) {
+    if (statusCode == 200) {
+      return buildLogout();
+    } else {
+      return Column(
+        children: [buildRegister(context), buildLogin(context)],
+      );
+    }
   }
 
   Widget buildDivider() {
-    return Divider(color: Colors.white);
+    return Divider(color: Colors.white, thickness: 2);
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    userInfo();
   }
 
   @override
@@ -146,15 +175,11 @@ class _MainDrawerState extends State<MainDrawer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildProfile(context),
-                      buildDivider(),
                       buildHome(),
-                      buildLogin(context),
-                      buildRegister(context),
+                      buildDivider(),
+                      buildAuth(context),
                       buildDivider(),
                       buildAddContacts(),
-                      buildLogout(),
-                      buildDivider(),
-                      buildPanic(),
                     ],
                   );
                 })));
