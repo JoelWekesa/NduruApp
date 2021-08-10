@@ -7,9 +7,36 @@ import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/services/location.dart';
 import 'package:forms_app/pages/contacts.dart';
 import 'package:forms_app/pages/providers.dart';
+import 'package:forms_app/pages/userEmergencies.dart';
 import 'package:forms_app/services/device.dart';
 import 'package:forms_app/services/panic.dart';
 import 'package:forms_app/services/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:forms_app/services/userEmergencies.dart';
+import 'package:forms_app/services/user.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+
+
+class Loading extends StatelessWidget {
+  const Loading({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        child: SizedBox(
+            child: Card(child: LayoutBuilder(builder: (context, constraint) {
+              return SpinKitCircle(
+                  color: Colors.blue, size: constraint.maxWidth);
+            })),
+            height: 300),
+      ),
+    );
+  }
+}
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,10 +47,25 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Map? providers;
+  String? token;
+  Map? data;
+  bool loading = false;
+
+  Future<void> checkAuth() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = await prefs.getString("access-token");
+    getUser instance = await getUser(token: token as String);
+    await instance.userDetails();
+    int statusCode = await instance.statusCode as int;
+    if (statusCode != 200) {
+      Navigator.of(context).pushNamed("/login");
+    }
+  }
+
   Future<void> goToContacts() async {
     Navigator.of(context).push(
-        MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
-        );
+      MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
+    );
   }
 
   Future getAllProviders() async {
@@ -33,14 +75,27 @@ class _HomeState extends State<Home> {
     return providers;
   }
 
+  Future<void> usrEmergencies() async {
+    setState(() {
+      loading = true;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = await prefs.getString("access-token");
+    UserEmergencies instance = await UserEmergencies(token: token as String);
+    await instance.retrieveEmergencies();
+    setState(() {
+      loading = false;
+    });
+    data = instance.data as Map;
+  }
+
   Widget buildEmergency() {
     return Expanded(
         child: InkWell(
       onTap: () {
         Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (BuildContext context) => AddEmergency()),
-            );
+          MaterialPageRoute(builder: (BuildContext context) => AddEmergency()),
+        );
       },
       child: Container(
         child: SizedBox(
@@ -64,9 +119,8 @@ class _HomeState extends State<Home> {
         child: InkWell(
       onTap: () {
         Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (BuildContext context) => ContactsPage()),
-            );
+          MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
+        );
       },
       child: Container(
         child: SizedBox(
@@ -76,7 +130,7 @@ class _HomeState extends State<Home> {
                 children: [
                   Icon(Icons.phone_rounded,
                       size: constraint.maxWidth, color: Colors.green),
-                  Text("Phone", style: TextStyle(fontSize: 20))
+                  Text("Contacts", style: TextStyle(fontSize: 20))
                 ],
               );
             })),
@@ -91,10 +145,10 @@ class _HomeState extends State<Home> {
       onTap: () async {
         await getAllProviders();
         Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (BuildContext context) => ProvidersList(),
-                settings: RouteSettings(arguments: providers)),
-            );
+          MaterialPageRoute(
+              builder: (BuildContext context) => ProvidersList(),
+              settings: RouteSettings(arguments: providers)),
+        );
       },
       child: Container(
         child: SizedBox(
@@ -135,9 +189,17 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildReports() {
+    if (loading == true) {
+      return Loading();
+    }
     return Expanded(
         child: InkWell(
-      onTap: () {},
+      onTap: () async {
+        await usrEmergencies();
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => MyEmergencies(),
+            settings: RouteSettings(arguments: data)));
+      },
       child: Container(
         child: SizedBox(
             child: Card(child: LayoutBuilder(builder: (context, constraint) {
@@ -273,9 +335,10 @@ class _HomeState extends State<Home> {
             // currentUserLocation();
             // Navigator.pushNamed(context, "/location");
           },
-          child: Icon(Icons.warning, color: Colors.red),
+          child: Icon(Icons.warning, color: Colors.white),
         ),
       ),
     );
   }
 }
+

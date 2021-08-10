@@ -84,7 +84,7 @@ class _ProvidersListState extends State<ProvidersList> {
         onPressed: () {
           panicEmergency();
         },
-        child: Icon(Icons.warning, color: Colors.red),
+        child: Icon(Icons.warning, color: Colors.white),
       ),
     );
   }

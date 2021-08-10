@@ -8,6 +8,7 @@ import 'package:forms_app/pages/login.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'dart:convert';
 
 class AddEmergency extends StatefulWidget {
   const AddEmergency({Key? key}) : super(key: key);
@@ -21,6 +22,8 @@ class _AddEmergencyState extends State<AddEmergency> {
   String? description;
   String? location;
   String? token;
+  double? longitude;
+  double? latitude;
   int? statusCodeUser;
   int? stausCodeEmergency;
   Map? data;
@@ -35,7 +38,9 @@ class _AddEmergencyState extends State<AddEmergency> {
     Placemark placeMark = instance.placemarks![0];
     String locality = placeMark.locality as String;
     String street = placeMark.street as String;
-    return (street + ", " + locality);
+    longitude = instance.longitude;
+    latitude = instance.latitude;
+    return "location: $street, $locality coordinates: ($latitude, $longitude)";
   }
 
   Future<void> authCheck() async {
@@ -46,8 +51,8 @@ class _AddEmergencyState extends State<AddEmergency> {
     statusCodeUser = instance.statusCode;
     if (statusCodeUser != 200) {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          );
+        MaterialPageRoute(builder: (BuildContext context) => Login()),
+      );
     }
   }
 
@@ -113,9 +118,9 @@ class _AddEmergencyState extends State<AddEmergency> {
                 ),
                 onPressed: () {
                   Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => Home()),
-                      );
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => Home()),
+                  );
                 },
                 icon: Icon(Icons.close),
                 label: Text("Close"))
@@ -183,9 +188,8 @@ class _AddEmergencyState extends State<AddEmergency> {
           ElevatedButton.icon(
               onPressed: () async {
                 Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => Home()),
-                    );
+                  MaterialPageRoute(builder: (BuildContext context) => Home()),
+                );
               },
               icon: Icon(Icons.cancel),
               label: Text(
@@ -204,6 +208,7 @@ class _AddEmergencyState extends State<AddEmergency> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Flexible(
                 child: SizedBox.expand(
@@ -229,8 +234,6 @@ class _AddEmergencyState extends State<AddEmergency> {
       ),
     );
   }
-
-  
 
   Widget buildEmergency() {
     return buildDescriptions();

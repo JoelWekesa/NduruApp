@@ -7,7 +7,9 @@ import 'package:forms_app/pages/location.dart';
 import 'package:forms_app/pages/addEmergency.dart';
 import 'package:forms_app/pages/addContacts.dart';
 import 'package:forms_app/pages/services.dart';
+import 'package:forms_app/pages/emergency.dart';
 import 'package:forms_app/pages/requestResetCode.dart';
+import 'package:forms_app/pages/userEmergencies.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,7 +24,8 @@ void main() {
       "/addcontacts": (context) => AddContacts(),
       "/services": (context) => ServicesPage(),
       "/resetcodes": (context) => RequestResetCode(),
-      // "/editcontacts": (context) => EditContacts(contact: ,),
+      "/useremergencies": (context) => MyEmergencies(),
+      "/useremergency": (context) => EmergencyPage(),
     },
     theme: ThemeData(primarySwatch: Colors.red),
   ));

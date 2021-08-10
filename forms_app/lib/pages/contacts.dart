@@ -4,10 +4,9 @@ import 'package:forms_app/services/user.dart';
 import 'package:forms_app/services/contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:forms_app/pages/login.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:forms_app/pages/addContacts.dart';
 import 'package:forms_app/pages/editContacts.dart';
-import 'package:forms_app/models/contact.dart';
+import 'package:forms_app/screens/loading.dart';
 
 class ContactsPage extends StatefulWidget {
   const ContactsPage({Key? key}) : super(key: key);
@@ -57,9 +56,9 @@ class _ContactsPageState extends State<ContactsPage> {
                     onPressed: () async {
                       await deleteContact(id);
                       Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => super.widget),
-                          );
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => super.widget),
+                      );
                     },
                     icon: Icon(Icons.delete),
                     label: Text("Delete")),
@@ -86,27 +85,27 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future getUserID() async {
-    setState(() {
-      loading = true;
-    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = await prefs.getString("access-token");
     getUser user = getUser(token: token as String);
     await user.userDetails();
     statusCode = user.statusCode;
-    loading = false;
     if (statusCode == 200) {
       User = user.data;
       return User!["user"]["id"];
     } else {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          );
+        MaterialPageRoute(builder: (BuildContext context) => Login()),
+      );
     }
   }
 
   Future<void> usrContacts() async {
     try {
+      setState(() {
+        loading = true;
+      });
+
       id = await getUserID();
       getUserContacts instance =
           await getUserContacts(id: id as String, token: token as String);
@@ -149,9 +148,9 @@ class _ContactsPageState extends State<ContactsPage> {
             ElevatedButton.icon(
                 onPressed: () {
                   Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => AddContacts()),
-                      );
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => AddContacts()),
+                  );
                 },
                 icon: Icon(Icons.add),
                 label: Text("Add new contact."))
@@ -169,10 +168,7 @@ class _ContactsPageState extends State<ContactsPage> {
   Widget buildContacts() {
     if (loading == true) {
       return Center(
-        child: SpinKitRotatingCircle(
-          color: Colors.white,
-          size: 50.0,
-        ),
+        child: LoadingCircle(loading: loading as bool)
       );
     } else if (details.length == 0) {
       return buildNoContact();
@@ -195,8 +191,6 @@ class _ContactsPageState extends State<ContactsPage> {
                           ),
                           title: Text(details[index]["contact_name"],
                               style: TextStyle(color: Colors.blue)),
-
-                          
                         ),
                       ),
                       Padding(
@@ -232,13 +226,14 @@ class _ContactsPageState extends State<ContactsPage> {
                                     primary: Colors.cyan),
                                 onPressed: () {
                                   Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (BuildContext context) =>
-                                              EditContacts(), settings: RouteSettings(
-                                          arguments: details[index],
-                                        ),
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          EditContacts(),
+                                      settings: RouteSettings(
+                                        arguments: details[index],
                                       ),
-                                      );
+                                    ),
+                                  );
                                 },
                                 icon: Icon(Icons.edit),
                                 label: Text("Edit"))
@@ -260,7 +255,6 @@ class _ContactsPageState extends State<ContactsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("My contacts"),

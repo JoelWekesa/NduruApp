@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:forms_app/services/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:forms_app/screens/maindrawer.dart';
+import 'package:forms_app/screens/loading.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:forms_app/services/user.dart';
+
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -17,13 +19,19 @@ class _LoginState extends State<Login> {
   String? password;
   int? statusCode;
   Map? data;
-  bool hide_pass = true;
+  bool loading = false;
 
   final _formKey = GlobalKey<FormState>();
 
   void startLogin(email, password) async {
+    setState(() {
+      loading = true;
+    });
     authLogin instance = authLogin(email: email, password: password);
     await instance.userLogin();
+    setState(() {
+      loading = false;
+    });
     statusCode = instance.statusCode;
     data = instance.data;
 
@@ -140,7 +148,9 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     Navigator.pushNamed(context, "/register");
                   },
-                  child: Text("Or register"))
+                  child: Text("Or register")),
+              SizedBox(width: 10),
+              LoadingCircle(loading: loading),
             ],
           ),
           SizedBox(height: 10),
@@ -197,3 +207,5 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
+
