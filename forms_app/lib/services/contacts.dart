@@ -88,7 +88,6 @@ class deleteUserContact {
     );
 
     statusCode = response.statusCode;
-    print(statusCode);
   }
 }
 
@@ -101,16 +100,20 @@ class editUserContacts {
   String contact_phone;
   String contact_location;
   String contact_relationship;
+  String priority;
+  // bool priority;
   int? statusCode;
   Map? data;
 
-  editUserContacts(
-      {required this.id,
-      required this.token,
-      required this.contact_name,
-      required this.contact_phone,
-      required this.contact_location,
-      required this.contact_relationship});
+  editUserContacts({
+    required this.id,
+    required this.token,
+    required this.contact_name,
+    required this.contact_phone,
+    required this.contact_location,
+    required this.contact_relationship,
+    required this.priority,
+  });
 
   Future<void> editBuddy() async {
     var body = {
@@ -118,6 +121,7 @@ class editUserContacts {
       "contact_phone": contact_phone,
       "contact_location": contact_location,
       "contact_relationship": contact_relationship,
+      "priority": priority,
     };
     var url = Uri.parse('http://10.0.2.2:5000/api/contacts/edit/$id');
     var response = await http.put(

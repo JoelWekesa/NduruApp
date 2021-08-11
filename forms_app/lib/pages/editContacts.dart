@@ -23,6 +23,7 @@ class _EditContactsState extends State<EditContacts> {
   String? token;
   Map? data;
   Map? contact;
+  bool checked = false;
   bool? loading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -114,6 +115,14 @@ class _EditContactsState extends State<EditContacts> {
     );
   }
 
+  checkPriority() {
+    if (contact!["priority"] == false) {
+      return "Make priority contact";
+    } else {
+      return "Remove from priority contacts";
+    }
+  }
+
   Future<void> editEmergencyContact() async {
     setState(() {
       loading = true;
@@ -127,7 +136,12 @@ class _EditContactsState extends State<EditContacts> {
         contact_name: contact_name as String,
         contact_phone: contact_phone as String,
         contact_location: contact_location as String,
-        contact_relationship: contact_relationship as String);
+        contact_relationship: contact_relationship as String,
+        priority: checked == true && contact!["priority"] == true
+            ? "false"
+            : checked == true && contact!["priority"] == false
+                ? "true"
+                : "false");
     await instance.editBuddy();
     data = instance.data;
     setState(() {
@@ -224,6 +238,28 @@ class _EditContactsState extends State<EditContacts> {
     );
   }
 
+  Widget buildPriority() {
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+        child: Row(
+          children: [
+            Checkbox(
+              checkColor: Colors.white,
+              value: checked,
+              onChanged: (bool? value) {
+                setState(() {
+                  checked = value!;
+                });
+              },
+            ),
+            Text(
+              checkPriority(),
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ));
+  }
+
   Widget buildSubmit() {
     return Row(
       children: [
@@ -259,6 +295,7 @@ class _EditContactsState extends State<EditContacts> {
                 buildContactPhone(),
                 buildContactLocation(),
                 buildContactRelationship(),
+                buildPriority(),
                 buildSubmit(),
               ],
             ),
