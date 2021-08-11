@@ -17,6 +17,13 @@ class _MyEmergenciesState extends State<MyEmergencies> {
   Widget buildUserEmergencies() {
     try {
       emergencies = data!["emergencies"]["rows"];
+      if(emergencies!.length < 1) {
+          return Container(
+            child: Center(
+              child: Text("You have not made any distress calls", style: TextStyle(fontSize: 20))
+            ),
+          );
+      }
       return ListView.builder(
           itemCount: emergencies!.length,
           itemBuilder: (BuildContext context, index) {
