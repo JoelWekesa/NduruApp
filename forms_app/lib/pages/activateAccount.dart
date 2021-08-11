@@ -3,6 +3,7 @@ import 'package:forms_app/screens/maindrawer.dart';
 import 'package:forms_app/services/activateAccount.dart';
 import 'package:forms_app/pages/login.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:forms_app/screens/loading.dart';
 
 class ActivateAccount extends StatefulWidget {
   const ActivateAccount({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class _ActivateAccountState extends State<ActivateAccount> {
   Map? data;
   String? email;
   String? code;
-  bool? loading = false;
+  bool loading = false;
   final _formKey = GlobalKey<FormState>();
 
   void _showDialogSuccess() {
@@ -112,15 +113,13 @@ class _ActivateAccountState extends State<ActivateAccount> {
     await instance.accountActivation();
     data = instance.data;
 
+    setState(() {
+      loading = false;
+    });
+
     if (instance.statusCode != 200) {
-      setState(() {
-        loading = false;
-      });
       _showDialog();
     } else {
-      setState(() {
-        loading = false;
-      });
       _showDialogSuccess();
     }
   }
@@ -165,39 +164,23 @@ class _ActivateAccountState extends State<ActivateAccount> {
   }
 
   Widget buildSubmit() {
-    if (loading == true) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-        child: Row(
-          children: [
-            ElevatedButton.icon(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    await finalActivation(email, code);
-                  }
-                },
-                icon: Icon(Icons.send),
-                label: Text("Submit")),
-            SpinKitRotatingCircle(
-              color: Colors.white,
-              size: 50.0,
-            )
-          ],
-        ),
-      );
-    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: ElevatedButton.icon(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              await finalActivation(email, code);
-            }
-          },
-          icon: Icon(Icons.send),
-          label: Text("Submit")),
+      child: Row(
+        children: [
+          ElevatedButton.icon(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  await finalActivation(email, code);
+                }
+              },
+              icon: Icon(Icons.send),
+              label: Text("Submit")),
+          SizedBox(width: 10),
+          LoadingCircle(loading: loading)
+        ],
+      ),
     );
   }
 

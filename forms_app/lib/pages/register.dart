@@ -6,6 +6,7 @@ import 'package:forms_app/services/user.dart';
 import 'package:forms_app/services/parents.dart';
 import 'package:forms_app/services/register.dart';
 import 'package:forms_app/pages/activateAccount.dart';
+import 'package:forms_app/screens/loading.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class _RegisterState extends State<Register> {
   Map? parents;
   List? items;
   Map? data;
+  bool loading = false;
   var parentId = "";
   var studentID = "";
   var nationalID = "";
@@ -54,6 +56,9 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> addUser() async {
+    setState(() {
+      loading = true;
+    });
     userRegistration instance = await userRegistration(
       first_name: firstname as String,
       last_name: lastname as String,
@@ -66,6 +71,9 @@ class _RegisterState extends State<Register> {
     );
 
     await instance.registerUser();
+    setState(() {
+      loading = false;
+    });
     data = instance.data;
     if (instance.statusCode != 200) {
       _showDialog();
@@ -382,23 +390,30 @@ class _RegisterState extends State<Register> {
   Widget buildSubmitButton() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ElevatedButton.icon(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  await addUser();
-                }
-              },
-              icon: Icon(Icons.send),
-              label: Text("Register")),
+          Row(
+            children: [
+              ElevatedButton.icon(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      await addUser();
+                    }
+                  },
+                  icon: Icon(Icons.send),
+                  label: Text("Register")),
+                  SizedBox(width: 10),
+                  LoadingCircle(loading: loading)
+            ],
+          ),
           SizedBox(width: 20),
           TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, "/login");
               },
-              child: Text("Or login"))
+              child: Text("Already have an account? Login"))
         ],
       ),
     );
