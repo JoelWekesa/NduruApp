@@ -8,6 +8,7 @@ import 'package:forms_app/pages/login.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:forms_app/screens/loading.dart';
 import 'dart:convert';
 
 class AddEmergency extends StatefulWidget {
@@ -27,12 +28,9 @@ class _AddEmergencyState extends State<AddEmergency> {
   int? statusCodeUser;
   int? stausCodeEmergency;
   Map? data;
-  bool? loading;
+  bool loading = false;
 
   Future currentUserLocation() async {
-    setState(() {
-      loading = true;
-    });
     getUserCoordinates instance = getUserCoordinates();
     await instance.getCurrentLocation();
     Placemark placeMark = instance.placemarks![0];
@@ -131,6 +129,9 @@ class _AddEmergencyState extends State<AddEmergency> {
   }
 
   Future<void> userEmergency() async {
+    setState(() {
+      loading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = await prefs.getString("access-token");
     location = await currentUserLocation();
@@ -154,19 +155,9 @@ class _AddEmergencyState extends State<AddEmergency> {
     }
   }
 
-  Widget buildLoading() {
-    return Container(
-      child: SpinKitCircle(
-        color: Colors.blue,
-        size: 50.0,
-      ),
-    );
-  }
+  
 
   Widget buildSubmit() {
-    if (loading == true) {
-      return buildLoading();
-    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
@@ -184,7 +175,7 @@ class _AddEmergencyState extends State<AddEmergency> {
                 "Send",
                 style: TextStyle(letterSpacing: 2, fontSize: 16),
               )),
-          SizedBox(width: 20),
+          SizedBox(width: 10),
           ElevatedButton.icon(
               onPressed: () async {
                 Navigator.of(context).push(
@@ -196,6 +187,10 @@ class _AddEmergencyState extends State<AddEmergency> {
                 "Cancel",
                 style: TextStyle(letterSpacing: 2, fontSize: 16),
               )),
+
+          SizedBox(width: 10),
+
+          LoadingCircle(loading: loading)
         ],
       ),
     );

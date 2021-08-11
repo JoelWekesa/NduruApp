@@ -6,7 +6,7 @@ import 'package:forms_app/services/user.dart';
 import 'package:forms_app/services/contacts.dart';
 import 'package:forms_app/pages/contacts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:forms_app/screens/loading.dart';
 
 class AddContacts extends StatefulWidget {
   const AddContacts({Key? key}) : super(key: key);
@@ -22,7 +22,7 @@ class _AddContactsState extends State<AddContacts> {
   String? contact_relationship;
   String? token;
   bool? priority = false;
-  bool? loading = false;
+  bool loading = false;
   int? statusCode;
   int number = 0;
   Map? User;
@@ -58,14 +58,12 @@ class _AddContactsState extends State<AddContacts> {
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  ContactsPage()),
-                          );
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ContactsPage()),
+                      );
                     },
                     icon: Icon(Icons.family_restroom),
                     label: Text("View Contacts")),
-
                 SizedBox(width: 20),
                 ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -128,16 +126,13 @@ class _AddContactsState extends State<AddContacts> {
     statusCode = instance.statusCode;
     if (statusCode != 200) {
       Navigator.of(context).push(
-          MaterialPageRoute(builder: (BuildContext context) => Login()),
-          );
+        MaterialPageRoute(builder: (BuildContext context) => Login()),
+      );
     }
     User = await instance.data;
   }
 
   Future<void> contactsCheck() async {
-    setState(() {
-      loading = true;
-    });
     await authCheck();
     try {
       String id = User!["user"]["id"];
@@ -147,7 +142,6 @@ class _AddContactsState extends State<AddContacts> {
 
       setState(() {
         number = instance.number as int;
-        loading = false;
       });
     } catch (e) {
       print(e);
@@ -155,6 +149,9 @@ class _AddContactsState extends State<AddContacts> {
   }
 
   Future addBuddy() async {
+    setState(() {
+      loading = true;
+    });
     addUserContacts instance = await addUserContacts(
         contact_name: contact_name as String,
         contact_phone: contact_phone as String,
@@ -162,6 +159,9 @@ class _AddContactsState extends State<AddContacts> {
         contact_relationship: contact_relationship as String,
         token: token as String);
     await instance.addBuddies();
+    setState(() {
+      loading = false;
+    });
     data = instance.data;
     if (instance.statusCode == 200) {
       _showDialogSuccess();
@@ -262,15 +262,23 @@ class _AddContactsState extends State<AddContacts> {
   Widget buildSubmit() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-      child: ElevatedButton.icon(
-          onPressed: () async {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              addBuddy();
-            }
-          },
-          icon: Icon(Icons.send),
-          label: Text("Submit")),
+      child: Row(
+        children: [
+          ElevatedButton.icon(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  addBuddy();
+                }
+              },
+              icon: Icon(Icons.send),
+              label: Text("Submit")),
+          SizedBox(
+            width: 10,
+          ),
+          LoadingCircle(loading: loading),
+        ],
+      ),
     );
   }
 
@@ -289,9 +297,9 @@ class _AddContactsState extends State<AddContacts> {
               ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => ContactsPage()),
-                        );
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => ContactsPage()),
+                    );
                   },
                   icon: Icon(Icons.family_restroom_outlined),
                   label: Text("View my contacts"))
@@ -302,18 +310,11 @@ class _AddContactsState extends State<AddContacts> {
     );
   }
 
-  Widget buildLoading() {
-    return SpinKitCircle(
-      color: Colors.white,
-      size: 50.0,
-    );
-  }
+  
 
   Widget buildForm() {
     if (number >= 5) {
       return buildMaxDialog();
-    } else if (loading == true) {
-      return buildLoading();
     } else {
       return ListView.builder(
           itemCount: 1,
