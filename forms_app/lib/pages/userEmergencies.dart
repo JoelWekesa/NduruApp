@@ -17,18 +17,22 @@ class _MyEmergenciesState extends State<MyEmergencies> {
   Widget buildUserEmergencies() {
     try {
       emergencies = data!["emergencies"]["rows"];
-      if(emergencies!.length < 1) {
-          return Container(
-            child: Center(
-              child: Text("You have not made any distress calls", style: TextStyle(fontSize: 20))
-            ),
-          );
+      if (emergencies!.length < 1) {
+        return Container(
+          child: Center(
+              child: Text("You have not made any distress calls",
+                  style: TextStyle(fontSize: 20))),
+        );
       }
       return ListView.builder(
           itemCount: emergencies!.length,
           itemBuilder: (BuildContext context, index) {
             return Card(
-                color: Colors.grey[200],
+                elevation: 5,
+                shadowColor: Colors.cyan,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
                 child: InkWell(
                   onTap: () {
                     emergency = emergencies![index];
@@ -37,21 +41,15 @@ class _MyEmergenciesState extends State<MyEmergencies> {
                         settings: RouteSettings(arguments: emergency)));
                   },
                   child: ListTile(
-                      title: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(emergencies![index]["description"],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(emergencies![index]["location"]
-                            .split(":")[1]
-                            .replaceAll("coordinates", "")),
-                      )),
+                      title: Text(emergencies![index]["description"],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                      subtitle: Text(emergencies![index]["location"]
+                          .split(":")[1]
+                          .replaceAll("coordinates", ""))),
                 ));
           });
     } catch (e) {
@@ -63,15 +61,10 @@ class _MyEmergenciesState extends State<MyEmergencies> {
   Widget build(BuildContext context) {
     data = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(title: Text("My Emergencies"), centerTitle: true),
       drawer: MainDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: buildUserEmergencies(),
-        ),
-      ),
+      body: buildUserEmergencies(),
     );
   }
 }

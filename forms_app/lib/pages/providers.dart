@@ -57,22 +57,25 @@ class _ProvidersListState extends State<ProvidersList> {
     return ListView.builder(
         itemCount: providersList!.length,
         itemBuilder: (BuildContext context, index) {
-          return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                color: Colors.grey[200],
-                child: ListTile(
-                  title: Text(providersList![index]["name"],
-                      style: TextStyle(fontSize: 18, letterSpacing: 2)),
-                  onTap: () async {
-                    await getCompanyServices(providersList![index]["id"]);
-                    Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (BuildContext context) => ServicesPage(), settings: RouteSettings(arguments: services)),
-                        );
-                  },
-                ),
-              ));
+          return Card(
+            elevation: 5,
+            shadowColor: Colors.cyan,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: ListTile(
+              title: Text(providersList![index]["name"],
+                  style: TextStyle(fontSize: 18, letterSpacing: 2)),
+              onTap: () async {
+                await getCompanyServices(providersList![index]["id"]);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => ServicesPage(),
+                      settings: RouteSettings(arguments: services)),
+                );
+              },
+            ),
+          );
         });
   }
 
@@ -98,7 +101,7 @@ class _ProvidersListState extends State<ProvidersList> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Card(child: buildProvidersPage()),
+          child: buildProvidersPage(),
         ),
       ),
       floatingActionButton: buildEmergencyButton(),

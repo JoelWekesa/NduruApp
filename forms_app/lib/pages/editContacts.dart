@@ -307,11 +307,17 @@ class _EditContactsState extends State<EditContacts> {
   Widget build(BuildContext context) {
     contact = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
-        appBar: AppBar(title: Text("Edit Contact"), centerTitle: true),
-        drawer: MainDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(key: _formKey, child: Card(child: buildForm())),
-        ));
+      appBar: AppBar(title: Text("Edit Contact"), centerTitle: true),
+      drawer: MainDrawer(),
+      body: Form(
+          key: _formKey,
+          child: Card(
+              elevation: 5,
+              shadowColor: Colors.cyan,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: buildForm())),
+    );
   }
 }

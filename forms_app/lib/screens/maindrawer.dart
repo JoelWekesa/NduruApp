@@ -89,6 +89,9 @@ class _MainDrawerState extends State<MainDrawer> {
     }
 
     return DrawerHeader(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/sec.jpg"), fit: BoxFit.cover)),
       child: InkWell(
           onTap: () {},
           child: Column(
@@ -102,14 +105,25 @@ class _MainDrawerState extends State<MainDrawer> {
               SizedBox(
                 height: 10,
               ),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-                  Widget>[
-                Text(name, style: TextStyle(color: Colors.white, fontSize: 20), maxLines: 1, overflow: TextOverflow.ellipsis,),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(email, style: TextStyle(color: Colors.white, fontSize: 16), maxLines: 1, overflow: TextOverflow.ellipsis,)
-              ]),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      name,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      email,
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  ]),
               SizedBox(
                 width: 18,
               ),
@@ -172,10 +186,9 @@ class _MainDrawerState extends State<MainDrawer> {
         itemCount: 1,
         itemBuilder: (BuildContext context, index) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               buildProfile(context),
-              buildDivider(),
               buildHome(),
               buildAuth(context),
               buildDivider(),

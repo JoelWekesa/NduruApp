@@ -6,7 +6,6 @@ import 'package:forms_app/screens/loading.dart';
 import 'package:forms_app/pages/home.dart';
 import 'package:forms_app/services/user.dart';
 
-
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -178,34 +177,30 @@ class _LoginState extends State<Login> {
       appBar: AppBar(title: Text("Login to your account.."), centerTitle: true),
       drawer: MainDrawer(),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    buildEmail(),
-                    buildPassword(),
-                    buildSubmitButton()
-                  ],
-                )),
+        child: Card(
+          elevation: 5,
+          shadowColor: Colors.cyan,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
           ),
+          child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [buildEmail(), buildPassword(), buildSubmitButton()],
+              )),
         ),
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FloatingActionButton(
-          backgroundColor: Colors.red[900],
-          onPressed: () {
-            // Navigator.pushNamed(context, "/location");
-          },
-          child: Icon(Icons.warning, color: Colors.red),
-        ),
-      ),
+      // floatingActionButton: Padding(
+      //   padding: const EdgeInsets.all(8.0),
+      //   child: FloatingActionButton(
+      //     backgroundColor: Colors.red[900],
+      //     onPressed: () {
+      //       // Navigator.pushNamed(context, "/location");
+      //     },
+      //     child: Icon(Icons.warning, color: Colors.red),
+      //   ),
+      // ),
     );
   }
 }
-
-

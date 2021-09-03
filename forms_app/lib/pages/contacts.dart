@@ -23,6 +23,7 @@ class _ContactsPageState extends State<ContactsPage> {
   List details = [];
   int? statusCode;
   bool? loading = false;
+  bool delLoading = false;
   String? contact_id = "";
   Map? contact;
 
@@ -76,6 +77,12 @@ class _ContactsPageState extends State<ContactsPage> {
                     },
                     icon: Icon(Icons.close),
                     label: Text("Cancel")),
+
+                SizedBox(
+                  width: 10,
+                ), //
+
+                LoadingCircle(loading: delLoading)
               ],
             )
           ],
@@ -128,15 +135,27 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<void> deleteContact(id) async {
+    setState(() {
+      delLoading = true;
+    });
     await selectContact(id);
     deleteUserContact instance = await deleteUserContact(
         id: contact_id as String, token: token as String);
 
     await instance.deleteBuddy();
+
+    setState(() {
+      delLoading = false;
+    });
   }
 
   Widget buildNoContact() {
     return Card(
+      elevation: 5,
+      shadowColor: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -167,82 +186,80 @@ class _ContactsPageState extends State<ContactsPage> {
 
   Widget buildContacts() {
     if (loading == true) {
-      return Center(
-        child: LoadingCircle(loading: loading as bool)
-      );
+      return Center(child: LoadingCircle(loading: loading as bool));
     } else if (details.length == 0) {
       return buildNoContact();
     } else {
       return ListView.builder(
           itemCount: details.length,
           itemBuilder: (BuildContext context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                  color: Colors.grey[200],
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.person,
-                            color: Colors.blue,
-                          ),
-                          title: Text(details[index]["contact_name"],
-                              style: TextStyle(color: Colors.blue)),
-                        ),
+            return Card(
+                elevation: 5,
+                shadowColor: Colors.cyan,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(
+                        Icons.person,
+                        color: Colors.blue,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: Icon(Icons.phone, color: Colors.green),
-                          title: Text(details[index]["contact_phone"],
-                              style: TextStyle(color: Colors.green)),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading:
-                              Icon(Icons.family_restroom, color: Colors.amber),
-                          title: Text(details[index]["contact_relationship"],
-                              style: TextStyle(color: Colors.amber)),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: <Widget>[
-                            ElevatedButton.icon(
-                                onPressed: () {
-                                  _showDialogDelete(details[index]["id"]);
-                                },
-                                icon: Icon(Icons.delete),
-                                label: Text("delete")),
-                            SizedBox(width: 20),
-                            ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.cyan),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          EditContacts(),
-                                      settings: RouteSettings(
-                                        arguments: details[index],
-                                      ),
+                      title: Text(details[index]["contact_name"],
+                          style: TextStyle(
+                              color: Colors.blue,
+                              letterSpacing: 2,
+                              fontSize: 18)),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.phone, color: Colors.green),
+                      title: Text(details[index]["contact_phone"],
+                          style: TextStyle(
+                              color: Colors.green,
+                              letterSpacing: 2,
+                              fontSize: 18)),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.family_restroom, color: Colors.amber),
+                      title: Text(details[index]["contact_relationship"],
+                          style: TextStyle(
+                              color: Colors.amber,
+                              letterSpacing: 2,
+                              fontSize: 18)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: <Widget>[
+                          ElevatedButton.icon(
+                              onPressed: () {
+                                _showDialogDelete(details[index]["id"]);
+                              },
+                              icon: Icon(Icons.delete),
+                              label: Text("delete")),
+                          SizedBox(width: 20),
+                          ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.cyan),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        EditContacts(),
+                                    settings: RouteSettings(
+                                      arguments: details[index],
                                     ),
-                                  );
-                                },
-                                icon: Icon(Icons.edit),
-                                label: Text("Edit"))
-                          ],
-                        ),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.edit),
+                              label: Text("Edit"))
+                        ],
                       ),
-                    ],
-                  )),
-            );
+                    ),
+                  ],
+                ));
           });
     }
   }
@@ -261,11 +278,14 @@ class _ContactsPageState extends State<ContactsPage> {
         centerTitle: true,
       ),
       drawer: MainDrawer(),
-      body: Container(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: buildContacts(),
-      )),
+      body: Container(child: buildContacts()),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: () {
+          Navigator.pushNamed(context, "/addcontacts");
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }

@@ -310,8 +310,6 @@ class _AddContactsState extends State<AddContacts> {
     );
   }
 
-  
-
   Widget buildForm() {
     if (number >= 5) {
       return buildMaxDialog();
@@ -347,14 +345,16 @@ class _AddContactsState extends State<AddContacts> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[300],
-        appBar: AppBar(title: Text("Add Contacts"), centerTitle: true),
+        appBar: AppBar(title: Text("Add Contact"), centerTitle: true),
         drawer: MainDrawer(),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Form(key: _formKey, child: buildForm()),
+          child: Card(
+            elevation: 5,
+            shadowColor: Colors.cyan,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
             ),
+            child: Form(key: _formKey, child: buildForm()),
           ),
         ));
   }

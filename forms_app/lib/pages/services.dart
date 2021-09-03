@@ -27,37 +27,38 @@ class _ServicesPageState extends State<ServicesPage> {
         ],
       ));
     }
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-          itemCount: available.length,
-          itemBuilder: (BuildContext context, index) {
-            return Card(
-              color: Colors.grey[200],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(available[index]["name"],
-                        style: TextStyle(
-                            fontSize: 20,
-                            letterSpacing: 2,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(available[index]["description"],
-                        style: TextStyle(
-                          fontSize: 16,
+    return ListView.builder(
+        itemCount: available.length,
+        itemBuilder: (BuildContext context, index) {
+          return Card(
+            elevation: 5,
+            shadowColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(available[index]["name"],
+                      style: TextStyle(
+                          fontSize: 20,
                           letterSpacing: 2,
-                        )),
-                  ),
-                ],
-              ),
-            );
-          }),
-    );
+                          fontWeight: FontWeight.bold)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(available[index]["description"],
+                      style: TextStyle(
+                        fontSize: 16,
+                        letterSpacing: 2,
+                      )),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   @override

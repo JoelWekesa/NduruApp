@@ -115,9 +115,9 @@ class _AddEmergencyState extends State<AddEmergency> {
                   primary: Colors.green[200],
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(
+                  Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                        builder: (BuildContext context) => Home()),
+                        builder: (BuildContext context) => AddEmergency()),
                   );
                 },
                 icon: Icon(Icons.close),
@@ -155,8 +155,6 @@ class _AddEmergencyState extends State<AddEmergency> {
     }
   }
 
-  
-
   Widget buildSubmit() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -187,9 +185,7 @@ class _AddEmergencyState extends State<AddEmergency> {
                 "Cancel",
                 style: TextStyle(letterSpacing: 2, fontSize: 16),
               )),
-
           SizedBox(width: 10),
-
           LoadingCircle(loading: loading)
         ],
       ),
@@ -197,34 +193,35 @@ class _AddEmergencyState extends State<AddEmergency> {
   }
 
   Widget buildDescriptions() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                child: SizedBox.expand(
-                  child: TextFormField(
-                    maxLines: null,
-                    decoration: InputDecoration.collapsed(
-                        hintText: "Describe your emergency"),
-                    validator: (value) {
-                      if (value == null || value.length < 1) {
-                        return "Please Describe your emergency";
-                      }
-                    },
-                    onSaved: (value) {
-                      description = value;
-                    },
-                  ),
-                ),
+    return Card(
+      elevation: 5,
+      shadowColor: Colors.cyan,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: TextFormField(
+                maxLines: null,
+                decoration:
+                    InputDecoration(labelText: "Describe your emergency", labelStyle: TextStyle(fontSize: 18, letterSpacing: 2)),
+                validator: (value) {
+                  if (value == null || value.length < 1) {
+                    return "Please Describe your emergency";
+                  }
+                },
+                onSaved: (value) {
+                  description = value;
+                },
               ),
-              buildSubmit()
-            ],
-          ),
+            ),
+            buildSubmit()
+          ],
         ),
       ),
     );

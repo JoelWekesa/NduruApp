@@ -16,8 +16,6 @@ import 'package:forms_app/services/userEmergencies.dart';
 import 'package:forms_app/services/user.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-
-
 class Loading extends StatelessWidget {
   const Loading({
     Key? key,
@@ -92,6 +90,10 @@ class _HomeState extends State<Home> {
   Widget buildEmergency() {
     return Expanded(
         child: InkWell(
+      splashColor: Colors.red,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => AddEmergency()),
@@ -99,16 +101,22 @@ class _HomeState extends State<Home> {
       },
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.warning_rounded,
-                      size: constraint.maxWidth, color: Colors.red),
-                  Text("Emergency", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.warning_rounded,
+                          size: constraint.maxWidth, color: Colors.red),
+                      Text("Emergency", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -117,6 +125,10 @@ class _HomeState extends State<Home> {
   Widget buildPhone() {
     return Expanded(
         child: InkWell(
+      splashColor: Colors.green,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(builder: (BuildContext context) => ContactsPage()),
@@ -124,16 +136,22 @@ class _HomeState extends State<Home> {
       },
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.phone_rounded,
-                      size: constraint.maxWidth, color: Colors.green),
-                  Text("Contacts", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.phone_rounded,
+                          size: constraint.maxWidth, color: Colors.green),
+                      Text("Contacts", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -142,6 +160,10 @@ class _HomeState extends State<Home> {
   Widget buildServices() {
     return Expanded(
         child: InkWell(
+      splashColor: Colors.cyan,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () async {
         await getAllProviders();
         Navigator.of(context).push(
@@ -152,16 +174,22 @@ class _HomeState extends State<Home> {
       },
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.settings_rounded,
-                      size: constraint.maxWidth, color: Colors.cyan),
-                  Text("Services", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.cyan,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.settings_rounded,
+                          size: constraint.maxWidth, color: Colors.cyan),
+                      Text("Services", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -170,19 +198,29 @@ class _HomeState extends State<Home> {
   Widget buildInfo() {
     return Expanded(
         child: InkWell(
+      splashColor: Colors.blue,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () {},
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.info_rounded,
-                      size: constraint.maxWidth, color: Colors.blue),
-                  Text("Information", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_rounded,
+                          size: constraint.maxWidth, color: Colors.blue),
+                      Text("Information", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -194,6 +232,10 @@ class _HomeState extends State<Home> {
     }
     return Expanded(
         child: InkWell(
+      splashColor: Colors.amber,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () async {
         await usrEmergencies();
         Navigator.of(context).push(MaterialPageRoute(
@@ -202,16 +244,22 @@ class _HomeState extends State<Home> {
       },
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.file_copy_rounded,
-                      size: constraint.maxWidth, color: Colors.amber),
-                  Text("Reports", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.amber,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.file_copy_rounded,
+                          size: constraint.maxWidth, color: Colors.amber),
+                      Text("Reports", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -220,19 +268,29 @@ class _HomeState extends State<Home> {
   Widget buildBlackSpots() {
     return Expanded(
         child: InkWell(
+      splashColor: Colors.black,
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       onTap: () {},
       child: Container(
         child: SizedBox(
-            child: Card(child: LayoutBuilder(builder: (context, constraint) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.cancel_rounded,
-                      size: constraint.maxWidth, color: Colors.black),
-                  Text("BlackSpots", style: TextStyle(fontSize: 20))
-                ],
-              );
-            })),
+            child: Card(
+                elevation: 5,
+                shadowColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: LayoutBuilder(builder: (context, constraint) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_rounded,
+                          size: constraint.maxWidth, color: Colors.black),
+                      Text("BlackSpots", style: TextStyle(fontSize: 20))
+                    ],
+                  );
+                })),
             height: 300),
       ),
     ));
@@ -322,10 +380,7 @@ class _HomeState extends State<Home> {
         // centerTitle: true,
       ),
       drawer: MainDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: buildHomePage(),
-      ),
+      body: buildHomePage(),
       floatingActionButton: Padding(
         padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
         child: FloatingActionButton(
@@ -341,4 +396,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-

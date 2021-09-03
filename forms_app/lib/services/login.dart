@@ -20,7 +20,7 @@ class authLogin {
     var response = await http.post(url,
         headers: {
           "Accept": "*/*",
-          "Content-Type": "application/x-www-form-urlencoded"
+          // "Content-Type": "application/x-www-form-urlencoded"
         },
         body: body);
     data = jsonDecode(response.body);
